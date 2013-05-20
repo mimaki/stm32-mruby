@@ -1,5 +1,7 @@
 # Object files
 *.o
+*.d
+*.lss
 
 # Libraries
 *.lib
@@ -15,3 +17,9 @@
 *.exe
 *.out
 *.app
+*.elf
+*.bin
+
+# Other
+.DS_Store
+*.bak
