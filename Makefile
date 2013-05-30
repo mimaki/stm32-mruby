@@ -58,10 +58,10 @@ $(BIN_IMAGE): $(EXECUTABLE)
 
 $(EXECUTABLE): main.c system_stm32f4xx.c startup_stm32f4xx.s stm32fxxx_it.c \
 	syscalls.c stm32f4_discovery.c xprintf.c rtc_support.c \
-	stm324xg_eval_fsmc_sram.c stm32f4driver.c 
+	stm324xg_eval_fsmc_sram.c stm32f4driver.c mrubyapp.c
 	$(CC) $(CFLAGS) $^ -o $@ \
-	-L$(EXTLIBDIR) -L. -L./lib/stm32 -L./lib/usb -lstm32f4_usb \
-	-lstm32f4_periph -lm 
+	-L$(EXTLIBDIR) -L. -L./lib/stm32 -L./lib/usb \
+	-lstm32f4_usb -lstm32f4_periph -L./mruby/build/stm32f4/lib -lmruby -lm
 
 usb: $(USB_LIB)
 stdp: $(STDP_LIB)
