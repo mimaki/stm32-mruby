@@ -112,5 +112,8 @@ MRuby::CrossBuild.new('stm32f4') do |conf|
   # Use standard print/puts/p
   conf.gem "#{root}/mrbgems/mruby-print"
 
+  # Use STM32 sample
+  conf.gem "#{root}/mrbgems/mruby-stm32-sample"
+
   conf.bins = %w()
 end
