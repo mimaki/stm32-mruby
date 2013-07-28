@@ -364,12 +364,9 @@ static void PWM_Config(uint16_t arduino_pin_num, uint16_t period)
     setup_pin(arduino_pin_num);
   }
 
-  if( arduino_pin_num == 3 ||
-      arduino_pin_num == 5 ||
-      arduino_pin_num == 6 ||
-      arduino_pin_num == 8 ||
+  if( arduino_pin_num == 8 ||
       arduino_pin_num == 9 ||
-      arduino_pin_num == 10){
+      arduino_pin_num == 11){
 
     if (arduino_pins[arduino_pin_num].pin_status == PIN_ANALOG_OUT) {
       return; /* configured */
@@ -381,32 +378,11 @@ static void PWM_Config(uint16_t arduino_pin_num, uint16_t period)
 
     switch (arduino_pin_num)
     {
-    case 3: /* PA1 - TIM5 - ch2 */
+    case 8: /* PA1 - TIM5 - ch2 */
       RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM5, ENABLE);
       TIMx         = TIM5;
       GPIO_AF_TIMx = GPIO_AF_TIM5;
       tim_ch       = 2;
-      break;
-
-    case 5: /* PG12- TIM4 - ch3 */
-      RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, ENABLE);
-      TIMx         = TIM4;
-      GPIO_AF_TIMx = GPIO_AF_TIM4;
-      tim_ch       = 3;
-      break;
-
-    case 6: /* PE6 - TIM9 - ch2 */
-      RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM9, ENABLE);
-      TIMx         = TIM9;
-      GPIO_AF_TIMx = GPIO_AF_TIM9;
-      tim_ch       = 2; /* CCR2 */
-      break;
-
-    case 8: /* PE5 - TIM9 - ch1 */
-      RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM9, ENABLE);
-      TIMx         = TIM9;
-      GPIO_AF_TIMx = GPIO_AF_TIM9;
-      tim_ch       = 1; /* CCR1 */
       break;
 
     case 9: /* PB11- TIM2 - ch4 */
@@ -416,11 +392,11 @@ static void PWM_Config(uint16_t arduino_pin_num, uint16_t period)
       tim_ch       = 4;
       break;
 
-    case 10: /* PB9 - TIM11- ch1 */
-      RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM11, ENABLE);
-      TIMx         = TIM11;
-      GPIO_AF_TIMx = GPIO_AF_TIM11;
-      tim_ch       = 1;
+    case 11: /* PA7 - TIM9 - ch1 */
+      RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM9, ENABLE);
+      TIMx         = TIM9;
+      GPIO_AF_TIMx = GPIO_AF_TIM9;
+      tim_ch       = 1; /* CCR1 */
       break;
 
     default:
@@ -437,6 +413,9 @@ static void PWM_Config(uint16_t arduino_pin_num, uint16_t period)
 
     arduino_pins[arduino_pin_num].pin_status = PIN_ANALOG_OUT;
   }
+  else {
+    DigitalIn_Config(arduino_pin_num);
+  }
 }
 
 static void PWM_Update(uint16_t *dutycycles)
@@ -448,21 +427,15 @@ static void PWM_Update(uint16_t *dutycycles)
     if (arduino_pins[pin].pin_status == PIN_ANALOG_OUT) {
       uint16_t val = dutycycles[pin];
 
-      // 3, 5, 6, 9, 10, 11
+      // 8, 9, 11
       //
-      //  3 - PA1 - TIM5 - ch2
-      //  5 - PG12- TIM4 - ch3
-      //  6 - PE6 - TIM9 - ch2
-      //  8 - PE5 - TIM9 - ch1
+      //  8 - PA1 - TIM5 - ch2
       //  9 - PB11- TIM2 - ch4
-      // 10 - PB9 - TIM11- ch1
+      // 11 - PA7 - TIM9 - ch1
       switch (pin) {
-        case 3:  TIM5->CCR2  = val;  break;
-        case 5:  TIM4->CCR3  = val;  break;
-        case 6:  TIM9->CCR2  = val;  break;
-        case 8:  TIM9->CCR1  = val;  break;
+        case 8:  TIM5->CCR2  = val;  break;
         case 9:  TIM2->CCR4  = val;  break;
-        case 10: TIM11->CCR1 = val;  break;
+        case 11: TIM9->CCR1  = val;  break;
         default: break;
       }
     }
@@ -493,13 +466,13 @@ uint32_t Millis(void)
 
 void analogWrite(uint16_t pin, uint16_t dutycycle)
 {
-  static uint16_t dutycycles[PIN_MAX + 1] = {0};
+  extern volatile uint16_t dutycycles[];
 
   PWM_Config(pin, PWM_DUTY);
 
   dutycycles[pin] = dutycycle;
 
-  PWM_Update(dutycycles);
+  PWM_Update((uint16_t*)dutycycles);
 }
 
 /*
@@ -590,17 +563,17 @@ void setup_pin(uint16_t arduino_pin_num)
     case 0:  ps->port_num = PORT_A; ps->pin_num = 3;  break;
     case 1:  ps->port_num = PORT_A; ps->pin_num = 2;  break;
     case 2:  ps->port_num = PORT_G; ps->pin_num = 7;  break;
-    case 3:  ps->port_num = PORT_A; ps->pin_num = 1;  break;
+    case 3:  ps->port_num = PORT_G; ps->pin_num = 8;  break;
     case 4:  ps->port_num = PORT_G; ps->pin_num = 12; break;
-    case 5:  ps->port_num = PORT_B; ps->pin_num = 8;  break;
-    case 6:  ps->port_num = PORT_E; ps->pin_num = 6;  break;
+    case 5:  ps->port_num = PORT_G; ps->pin_num = 13; break;
+    case 6:  ps->port_num = PORT_G; ps->pin_num = 14; break;
     case 7:  ps->port_num = PORT_G; ps->pin_num = 15; break;
-    case 8:  ps->port_num = PORT_E; ps->pin_num = 5;  break;
+    case 8:  ps->port_num = PORT_A; ps->pin_num = 1;  break;
     case 9:  ps->port_num = PORT_B; ps->pin_num = 11; break;
-    case 10: ps->port_num = PORT_B; ps->pin_num = 9;  break;
-    case 11: ps->port_num = PORT_C; ps->pin_num = 3;  break;
-    case 12: ps->port_num = PORT_C; ps->pin_num = 2;  break;
-    case 13: ps->port_num = PORT_B; ps->pin_num = 10; break;
+    case 10: ps->port_num = PORT_A; ps->pin_num = 4;  break;
+    case 11: ps->port_num = PORT_A; ps->pin_num = 7;  break;
+    case 12: ps->port_num = PORT_A; ps->pin_num = 6;  break;
+    case 13: ps->port_num = PORT_A; ps->pin_num = 5;  break;
     case 14: ps->port_num = PORT_C; ps->pin_num = 0;  break;
     case 15: ps->port_num = PORT_C; ps->pin_num = 1;  break;
     case 16: ps->port_num = PORT_B; ps->pin_num = 0;  break;
