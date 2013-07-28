@@ -110,6 +110,11 @@ int main(void)
   return 0;
 }
 
+#define PWMTHRSTEP 16
+#define PWMTHRBASE (PWMTHRSTEP/2-1)
+#define PWMDUTYMAX 255
+volatile uint16_t dutycycles[PIN_MAX+1] = {0};
+
 /**
   * @brief  System tick handler.
   * @param  None
@@ -117,9 +122,22 @@ int main(void)
   */
 void SysTick_Handler()
 {
+  int p;
+  static uint16_t pwmthr = PWMTHRBASE;
+
   SystemTick++;
   if (TimingDelay != 0){
     TimingDelay --;
+  }
+
+  for (p = 0; p <= PIN_MAX; p++) {
+    if (p != 8 && p != 9 && p != 11) {
+      digitalWrite(p, (dutycycles[p] > pwmthr) ? 1 : 0);
+    }
+  }
+  pwmthr += PWMTHRSTEP;
+  if (pwmthr > PWMDUTYMAX) {
+    pwmthr = PWMTHRBASE;
   }
 }
 
