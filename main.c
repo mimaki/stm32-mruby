@@ -72,7 +72,7 @@ int main(void)
   uint32_t sts = 0;
 #ifdef INCLUDE_MRUBY
   mrb_state *mrb = NULL;
-  extern uint8_t *appbin;
+  extern const uint8_t appbin[];
 #endif
 
   xdev_out(VCP_put_char);
