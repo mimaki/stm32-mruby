@@ -31,15 +31,11 @@ INCLUDES = -I.. -I./mruby-arm/include -I./STM32F4-Discovery_FW_V1.1.0/Project/De
 
 CFLAGS = -Wall $(OPTIMIZATION) $(DEBUG)
 CFLAGS+=-MD -mcpu=cortex-m4 -march=armv7e-m -mtune=cortex-m4
-# -march=armv7e-m -mtune=cortex-m3
-CFLAGS+=-g -Os -mapcs-frame -mno-sched-prolog -std=gnu99 -gdwarf-2 -fno-strict-aliasing -fsigned-char -ffunction-sections -fdata-sections -fno-schedule-insns2 --param max-inline-insns-single=1000 -fno-common -fno-hosted -mfloat-abi=softfp -mfpu=fpv4-sp-d16 -mlittle-endian -mthumb -flto-partition=none -fipa-sra
-AFLAGS  = -mcpu=cortex-m4 -mthumb -mthumb-interwork -mlittle-endian -mfloat-abi=hard -mfpu=fpv4-sp-d16
-CFLAGS  = -mcpu=cortex-m4 -mthumb -mthumb-interwork -mlittle-endian -mfloat-abi=hard -mfpu=fpv4-sp-d16 -O2 \
+AFLAGS  = -mcpu=cortex-m4 -mthumb -mthumb-interwork -mlittle-endian -mfloat-abi=softfp
+CFLAGS  = -mcpu=cortex-m4 -mthumb -mthumb-interwork -mlittle-endian -mfloat-abi=softfp -O2 \
 
-#CFLAGS += -I./inc $(INCLUDES)
 CFLAGS += -I./../../inc $(INCLUDES)
-#LDFLAGS = -static -mcpu=cortex-m4 -mfloat-abi=softfp -mthumb $(OPTIMIZATION)
-LDFLAGS = -static -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -mthumb $(OPTIMIZATION)
+LDFLAGS = -static -mcpu=cortex-m4 -mfloat-abi=softfp -mthumb $(OPTIMIZATION)
 ASFLAGS = -mcpu=cortex-m4 --defsym RAM_MODE=0
 
 MAKE_FLAGS = --no-print-directory CC='$(CC)' LL='$(LL)' ALL_CFLAGS='$(ALL_CFLAGS)'
